@@ -7,6 +7,10 @@ import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Button from '@material-ui/core/Button'
 
+import Snackbar from '@material-ui/core/Snackbar'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
+
 const authServices = new AuthServices()
 
 export default class SignUp extends Component {
@@ -21,7 +25,17 @@ export default class SignUp extends Component {
       UserNameFlag: false,
       PasswordFlag: false,
       ConfirmPasswordFlag: false,
+
+      open: false,
+      Message: '',
     }
+  }
+
+  handleClose = (e, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    this.setState({ open: false })
   }
 
   CheckValidity() {
@@ -66,13 +80,16 @@ export default class SignUp extends Component {
             this.props.history.push('/SignIn')
           } else {
             console.log('Sign Up Failed')
+            this.setState({ open: true, Message: 'Sign Up Failed' })
           }
         })
         .catch((error) => {
           console.log('error : ', error)
+          this.setState({ open: true, Message: 'Something Went Wrong' })
         })
     } else {
       console.log('Not Acceptable')
+      this.setState({ open: true, Message: 'Please Fill Required Field' })
     }
   }
 
@@ -88,8 +105,8 @@ export default class SignUp extends Component {
     )
   }
 
-  handleSignIn = e => {
-      this.props.history.push('/SignIn')
+  handleSignIn = (e) => {
+    this.props.history.push('/SignIn')
   }
 
   render() {
@@ -112,6 +129,7 @@ export default class SignUp extends Component {
               />
               <TextField
                 className="TextField"
+                type="password"
                 name="Password"
                 label="Password"
                 variant="outlined"
@@ -122,6 +140,7 @@ export default class SignUp extends Component {
               />
               <TextField
                 className="TextField"
+                type="password"
                 name="ConfirmPassword"
                 label="Confirm Password"
                 variant="outlined"
@@ -165,6 +184,31 @@ export default class SignUp extends Component {
             </Button>
           </div>
         </div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={this.state.open}
+          autoHideDuration={6000}
+          onClose={this.handleClose}
+          message={this.state.Message}
+          action={
+            <React.Fragment>
+              <Button color="secondary" size="small" onClick={this.handleClose}>
+                UNDO
+              </Button>
+              <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={this.handleClose}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </React.Fragment>
+          }
+        />
       </div>
     )
   }

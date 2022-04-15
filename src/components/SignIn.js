@@ -6,6 +6,9 @@ import Radio from '@material-ui/core/Radio'
 import RadioGroup from '@material-ui/core/RadioGroup'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Button from '@material-ui/core/Button'
+import Snackbar from '@material-ui/core/Snackbar'
+import IconButton from '@material-ui/core/IconButton'
+import CloseIcon from '@material-ui/icons/Close'
 
 const authServices = new AuthServices()
 
@@ -18,7 +21,16 @@ export default class SignIn extends Component {
       UserNameFlag: false,
       Password: '',
       PasswordFlag: false,
+      open: false,
+      Message: '',
     }
+  }
+
+  handleClose = (e, reason) => {
+    if (reason === 'clickaway') {
+      return
+    }
+    this.setState({ open: false })
   }
 
   handleRadioChange = (e) => {
@@ -67,13 +79,16 @@ export default class SignIn extends Component {
             this.props.history.push('/HomePage')
           } else {
             console.log('Something Went Wrong')
+            this.setState({ open: true, Message: 'LogIn UnSuccessfully' })
           }
         })
         .catch((error) => {
           console.log('Error : ', error)
+          this.setState({ open: true, Message: 'Something Went Wrong' })
         })
     } else {
       console.log('Not Acceptable')
+      this.setState({ open: true, Message: 'Please Field Mandetory Field' })
     }
   }
 
@@ -97,6 +112,7 @@ export default class SignIn extends Component {
               />
               <TextField
                 className="TextField"
+                type="password"
                 name="Password"
                 label="Password"
                 variant="outlined"
@@ -140,6 +156,31 @@ export default class SignIn extends Component {
             </Button>
           </div>
         </div>
+        <Snackbar
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          open={this.state.open}
+          autoHideDuration={6000}
+          onClose={this.handleClose}
+          message={this.state.Message}
+          action={
+            <React.Fragment>
+              <Button color="secondary" size="small" onClick={this.handleClose}>
+                UNDO
+              </Button>
+              <IconButton
+                size="small"
+                aria-label="close"
+                color="inherit"
+                onClick={this.handleClose}
+              >
+                <CloseIcon fontSize="small" />
+              </IconButton>
+            </React.Fragment>
+          }
+        />
       </div>
     )
   }
